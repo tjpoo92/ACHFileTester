@@ -57,9 +57,7 @@ namespace ACH_File_Tester
                         Console.ReadLine();
                         break;
                     case "8":
-                        Console.WriteLine(value);
-                        Console.WriteLine("This is the Batch Control Total");
-                        //BatchControlRecord(value);
+                        BatchControlRecord(value);
                         Console.ReadLine();
                         break;
                     case "9":
@@ -103,9 +101,7 @@ namespace ACH_File_Tester
                         Console.WriteLine();
                         break;
                     case "8":
-                        Console.WriteLine(value);
-                        Console.WriteLine("This is the Batch Control Total");
-                        //BatchControlRecord(value);
+                        BatchControlRecord(value);
                         Console.WriteLine();
                         break;
                     case "9":
@@ -191,9 +187,30 @@ namespace ACH_File_Tester
             throw new NotImplementedException();
         }
 
-        private static void BatchControlRecord(string value)
+        private static void BatchControlRecord(string line)
         {
-            throw new NotImplementedException();
+            if (line.Substring(0, 1) == "8")
+            {
+                Console.WriteLine(line);
+                Console.WriteLine("This is an Batch Control Record");
+                Dictionary<string, string> batchControlRecord = new Dictionary<string, string>
+                {
+                    { "Service Class Code", line.Substring(1, 3).Trim() },
+                    { "Entry / Addenda Count", line.Substring(4, 6).Trim() },
+                    { "Entry Hash", line.Substring(10, 10).Trim() },
+                    { "Total Debit Entry Dollar Amount", line.Substring(20, 12).Trim() }, //look at formatting as currency
+                    { "Total Credit Entry Dollar Amount", line.Substring(32, 12).Trim() },
+                    { "Company Identification", line.Substring(44, 10).Trim() },
+                    { "Originating DFI Identification", line.Substring(79, 8).Trim() },
+                    { "Batch Number", line.Substring(87, 7).Trim() }
+
+                };
+                foreach (KeyValuePair<string, string> kvp in batchControlRecord)
+                {
+                    Console.WriteLine("{0,-30} {1,15}", kvp.Key, kvp.Value);
+                };
+            }
+            else Console.WriteLine("This is not an Batch Control Record");
         }
         
         private static void FileControlRecord(string line)
@@ -213,7 +230,7 @@ namespace ACH_File_Tester
                 };
                 foreach (KeyValuePair<string, string> kvp in fileControlRecord)
                 {
-                    Console.WriteLine("{0,-30} {1,15}", kvp.Key, kvp.Value);
+                    Console.WriteLine("{0,-30} {1,15}", kvp.Key, kvp.Value); //more formatting to fix
                 };
             }
             else if (line.Substring(0, 1) == "9" && line.Substring(1, 1) == "9")
